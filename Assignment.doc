@@ -1,0 +1,50 @@
+Take-Home Assignment: Image Search Application
+
+Objective:
+
+Develop an image search application that allows users to search for images based on textual queries. The application will process a dataset of image URLs, by downloading the images, generate embeddings for each image using an image recognition model, index these embeddings in a vector database, and provide a user interface for searching and displaying relevant images.
+
+Tasks:
+
+Image Downloader Service:
+
+Download all images from a provided dataset of image URLs.
+Store the downloaded images in a shared volume accessible by other services.
+
+- Embedding Generator Service/Job:
+Utilize an image recognition model to create an embedding vector for each image.
+You may use pre-trained models available. OpenAI CLIP is a good example of such a model so is BLIP.
+
+- Vector Database Service:
+Index the embedding vectors using a vector database or in memory.
+You can choose any suitable vector database like Faiss, or Elasticsearch with vector capabilities. Or just create an in memory one with library such as NumPy or Annoy.
+Expose an API endpoint to query the database based on embedding similarity.
+
+- User Interface Service:
+Create a user interface where users can input a search term (e.g., "men", "playing with a ball" and get relevant images as a result).
+Convert the search term into an embedding using the same model.
+Query the vector database for similar image embeddings.
+Display the retrieved images to the user.
+Another option is to create an API that receives a "query_string" and returns the path (or image_url) of the image. (e.g. GET /get_image?query_string=Bathroom HTTP/1.1 returns { "query": "Bathroom","image_url": "http://images.cocodataset.org/train2017/000000324266.jpg" }
+
+- Requirements:
+Code should be in python.
+You may implement with as many services as needed. Either a service per task or one service (monolith) for all the tasks.
+Each service, job, or database should run within its own Docker container.
+Use Docker Compose to orchestrate and run all services locally.
+Ensure proper communication between services, using networking or shared volumes as needed.
+Provide clear documentation and setup instructions.
+
+- Deliverables:
+Source code for all services.
+A docker-compose.yml file to run all services locally.
+Instructions on how to build and run the application.
+You should be able to explain how you would scale out the architecture if there are millions of images and high traffic to the the search interface
+A short screen recording demoing of the working product
+
+- Instructions:
+Focus on modularity and clear separation of concerns between services.
+Ensure that services are resilient and handle errors gracefully.
+Write clean, maintainable code with appropriate documentation and comments.
+Start with the simple tasks such as downloading the images efficiently, then move on to more complex ones like generating the embeddings.
+It is expected to use ChatGPT, Claude or any other LLM for help with the coding of this project.

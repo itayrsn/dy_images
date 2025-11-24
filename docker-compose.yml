@@ -1,0 +1,101 @@
+services:
+  # --- infra services ---
+  
+  rabbitmq:
+    image: rabbitmq:4-management
+    restart: always
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    container_name: qdrant
+    ports:
+      - 6333:6333
+      - 6334:6334
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    configs:
+      - source: qdrant_config
+        target: /qdrant/config/production.yaml
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - app_network
+    
+  # --- app services ---
+    
+  embedding_generator:
+    build: ./embedding
+    container_name: embedding_generator
+    ports:
+      - 8001:8001
+    volumes:
+      - images:/app/images
+    networks:
+      - app_network
+  
+  indexer:
+    build: ./indexer
+    container_name: indexer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      embedding_generator:
+        condition: service_started
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - QDRANT_HOST=qdrant
+      - MODEL_SERVER_URL=http://model_server:8000
+    networks:
+      - app_network
+  
+  downloader:
+    build: ./downloader
+    container_name: downloader
+    volumes:
+      - images:/data/images
+    networks:
+      - app_network
+  
+  search_app:
+    build: ./app
+    container_name: search_app
+    ports:
+      - 8501:8501
+    depends_on:
+      qdrant
+    environment:
+      - INDEXER_URL=http://indexer:8000
+      - EMBEDDING_GENERATOR_URL=http://embedding_generator:8001
+    volumes:
+      - images:/app/images
+    networks:
+      - app_network
+
+configs:
+  qdrant_config:
+    content: |
+      log_level: INFO
+
+volumes:
+  images:    # Shared volume for storing raw images
+  qdrant_storage: # Persistence for vector DB
+
+networks:
+  app_network:
+    driver: bridge
