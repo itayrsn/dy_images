@@ -2,7 +2,7 @@
 
 ## Objectives
 - Provide a modular, containerised baseline that covers the full image search lifecycle: ingestion → embedding → vector search → user query experience.
-- Optimise for clarity, reproducibility, and extensibility so new team members can contribute quickly.
+- Optimise for clarity, reproducibility, and extensibility so new team members can contribute quickly
 - Surface operational considerations (observability, failure handling, scaling) that demonstrate production-minded thinking.
 
 ## High-Level Data Flow
