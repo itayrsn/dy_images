@@ -1,0 +1,10 @@
+[project]
+name = "embedding"
+version = "0.1.0"
+description = "Embedding generator service"
+requires-python = ">=3.14"
+dependencies = [
+    "litserve>=0.2.16",
+    "open-clip-torch>=3.2.0",
+    "torch>=2.9.1",
+]
