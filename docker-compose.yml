@@ -58,17 +58,26 @@ services:
       embedding_generator:
         condition: service_started
     environment:
-      - RABBITMQ_HOST=rabbitmq
-      - QDRANT_HOST=qdrant
-      - MODEL_SERVER_URL=http://model_server:8000
+      - RABBITMQ_HOST=localhost
+      - QDRANT_HOST=localhost
+      - EMBEDDING_SERVICE_URL=http://localhost:8001
     networks:
       - app_network
   
   downloader:
     build: ./downloader
     container_name: downloader
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      indexer:
+        condition: service_started
+    environment:
+      - RABBITMQ_HOST=localhost
+      - INPUT_URLS_FILE=image_urls.txt
+      - OUTPUT_DIR=/app/images
     volumes:
-      - images:/data/images
+      - images:/app/images
     networks:
       - app_network
   
@@ -80,8 +89,8 @@ services:
     depends_on:
       qdrant
     environment:
-      - INDEXER_URL=http://indexer:8000
-      - EMBEDDING_GENERATOR_URL=http://embedding_generator:8001
+      - QDRANT_URL=http://localhost:6333
+      - EMBEDDING_SERVICE_URL=http://localhost:8001
     volumes:
       - images:/app/images
     networks:

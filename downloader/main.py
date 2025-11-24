@@ -10,8 +10,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 from tqdm.asyncio import tqdm
 
-INPUT_URLS_FILE = Path("image_urls.txt")
-OUTPUT_DIR = Path("../images")
+INPUT_URLS_FILE = os.getenv("INPUT_URLS_FILE", "image_urls.txt")
+OUTPUT_DIR = os.getenv("OUTPUT_DIR", "../images")
 MQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 INDEX_QUEUE = 'indexing_queue'
 

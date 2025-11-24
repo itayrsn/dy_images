@@ -3,8 +3,10 @@ import requests
 import streamlit as st
 import qdrant_client
 
-db = qdrant_client.QdrantClient(url="http://localhost:6333")
+
 EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8001")
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+db = qdrant_client.QdrantClient(url=QDRANT_URL)
 
 
 # --- Service Functions ---
